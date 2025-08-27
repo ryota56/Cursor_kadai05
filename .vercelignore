@@ -1,7 +1,0 @@
-.streamlit/
-__pycache__/
-*.pyc
-.env
-*.log
-assets/
-.specstory/
