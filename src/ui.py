@@ -1305,16 +1305,29 @@ def render_sidebar():
     with st.sidebar:
         st.header("⚙️ 設定")
         
-        # APIキー設定（環境変数から読み込み）
+        # APIキー設定（環境変数/Secretsからのみ読み込み）
         api_key = os.getenv("GEMINI_API_KEY", "")
         if not api_key:
             api_key = st.secrets.get("GEMINI_API_KEY", "")
-        if not api_key:
-            api_key = st.text_input(
-                "Gemini APIキー",
-                type="password",
-                help="Google AI Studioから取得したAPIキーを入力してください"
-            )
+        
+        # APIキーの状態表示
+        if api_key:
+            if api_key == "your-api-key-here":
+                st.error("⚠️ プレースホルダーのAPIキーが設定されています。実際のAPIキーに変更してください。")
+            else:
+                st.success("✅ APIキーが設定されています")
+        else:
+            st.error("❌ APIキーが設定されていません")
+            st.markdown("""
+            **Streamlit Cloud Secrets設定が必要です**:
+            
+            1. Streamlit Cloud Dashboard にアクセス
+            2. アプリの Settings → Secrets を開く
+            3. 以下を追加:
+            ```
+            GEMINI_API_KEY = "実際のAPIキー"
+            ```
+            """)
         
         # APIキーの検証
         if api_key and api_key != "your-api-key-here":
@@ -1347,15 +1360,21 @@ def render_sidebar():
             st.markdown("""
             **APIキー設定方法**:
             1. [Google AI Studio](https://aistudio.google.com/) でAPIキーを取得
-            2. `.streamlit/secrets.toml` または環境変数 `GEMINI_API_KEY` に設定
-            3. または、上記の入力フィールドに直接入力
+            2. Streamlit Cloud Secrets または環境変数 `GEMINI_API_KEY` に設定
+            
+            **Streamlit Cloud Secrets 設定**:
+            1. Streamlit Cloud Dashboard → アプリ → Settings → Secrets
+            2. 以下を追加:
+            ```
+            GEMINI_API_KEY = "実際のAPIキー"
+            ```
             
             **APIキー取得手順**:
             1. https://aistudio.google.com/ にアクセス
             2. Googleアカウントでログイン
             3. 「Get API key」をクリック
             4. 新しいAPIキーを作成または既存のキーを選択
-            5. コピーしたAPIキーを設定ファイルに貼り付け
+            5. コピーしたAPIキーをStreamlit Cloud Secretsに設定
             
             **対応形式**: PNG, JPEG, WEBP, HEIC/HEIF
             
